@@ -32,7 +32,7 @@ const DashboardPage = () => {
   };
 
   const handleCloseForm = () => {
-    setSelectedEmployee({});
+    setSelectedEmployee(null);
     setIsFormOpen(false);
   };
 

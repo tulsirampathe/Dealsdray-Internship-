@@ -19,8 +19,7 @@ export const addEmployee = async (req, res) => {
   const { f_Name, f_Email, f_Mobile, f_Designation, f_gender, f_Course } =
     req.body;
 
-    console.log(req.body);
-    
+  console.log(req.body);
 
   try {
     const file = req.file;
@@ -40,6 +39,8 @@ export const addEmployee = async (req, res) => {
 
     const f_Image = file.buffer;
 
+    const courses = Array.isArray(f_Course) ? f_Course : f_Course.split(",");
+
     const newEmployee = new Employee({
       f_Image,
       f_Name,
@@ -47,7 +48,7 @@ export const addEmployee = async (req, res) => {
       f_Mobile,
       f_Designation,
       f_gender,
-      f_Course,
+      f_Course: courses,
     });
 
     await newEmployee.save();
@@ -66,7 +67,6 @@ export const addEmployee = async (req, res) => {
 // Edit Employee
 export const editEmployee = async (req, res) => {
   const { id } = req.params;
-
   const { f_Name, f_Email, f_Mobile, f_Designation, f_gender, f_Course } =
     req.body;
 
@@ -91,17 +91,28 @@ export const editEmployee = async (req, res) => {
       ...(f_Mobile && { f_Mobile }),
       ...(f_Designation && { f_Designation }),
       ...(f_gender && { f_gender }),
-      ...(f_Course && { f_Course }),
     };
+
+    if (f_Course) {
+      const validCourses = ["MCA", "BCA", "BSC"];
+      const courses = Array.isArray(f_Course) ? f_Course : f_Course.split(",");
+      const uniqueCourses = [...new Set(courses)].filter((course) =>
+        validCourses.includes(course)
+      );
+
+      // Directly set the f_Course array in updateFields
+      updateFields.f_Course = uniqueCourses;
+    }
 
     const updatedEmployee = await Employee.findByIdAndUpdate(id, updateFields, {
       new: true,
     });
 
     if (!updatedEmployee) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Employee not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Employee not found",
+      });
     }
 
     res.status(200).json({

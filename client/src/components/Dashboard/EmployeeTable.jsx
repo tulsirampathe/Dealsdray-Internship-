@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { Buffer } from "buffer";
 import { useSelector } from "react-redux";
@@ -8,6 +9,9 @@ const EmployeeTable = ({ onEdit }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: employees } = useSelector((state) => state.auth);
   const [deleteEmp, deleteStatus] = useDeleteEmpMutation(); // Use delete mutation
+
+  console.log("emp : ", employees);
+  
 
   useMutationToast({
     ...deleteStatus,
@@ -96,7 +100,7 @@ const EmployeeTable = ({ onEdit }) => {
                 <td className="px-4 py-2">{employee.f_Mobile}</td>
                 <td className="px-4 py-2">{employee.f_Designation}</td>
                 <td className="px-4 py-2">{employee.f_gender}</td>
-                <td className="px-4 py-2">{employee.f_Course}</td>
+                <td className="px-4 py-2">{employee.f_Course.join(",")}</td>
                 <td className="px-4 py-2">
                   {new Date(employee.createdAt).toLocaleDateString()}
                 </td>
